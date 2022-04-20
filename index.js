@@ -18,13 +18,19 @@ app.get('/',function(req,res){
     })
 })
 
+app.post('/',function(req,res){
+    Usuario.find({ nome: new RegExp(req.body.txtPesquisa,'gi')}).exec(function(err,docs){
+        res.render('index.ejs',{Usuarios:docs})
+    })
+})
+
 
 
 app.get('/add', function(req,res){
     res.render('adiciona.ejs')
 })
 
-app.post('/add', function(req,res){
+app.post('/add',function(req,res){
     var usuario = new Usuario({
         nome: req.body.txtNome,
         email: req.body.txtEmail,
@@ -48,7 +54,27 @@ app.get('/del/:id', function(req,res){
             res.redirect('/')
         }
     })
+})
 
+app.get('/edit/:id',function(req,res){
+    Usuario.findById(req.params.id,function(err, docs){
+        if(err){
+        console.log(err)
+      }else{
+           res.render('edita.ejs',{Usuario: docs})
+           }
+        })
+})
+
+app.post('/edit/:id', function(req,res){
+    Usuario.findByIdAndUpdate(req.params.id,
+        {   nome: req.body.txtNome,
+            email: req.body.txtEmail,
+            senha: req.body.txtSenha, 
+        }, function(err, docs){
+                res.redirect('/')
+            }
+            )
 })
 
 app.listen(3000, function(){
